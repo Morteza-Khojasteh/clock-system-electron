@@ -20,5 +20,8 @@
   "homepage": "https://github.com/Morteza-Khojasteh/clock-system-electron#readme",
   "dependencies": {
     "electron": "^42.3.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^26.8.1"
   }
 }
