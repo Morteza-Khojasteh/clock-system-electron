@@ -23,7 +23,9 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, "offline.html"));
   });
 
-  mainWindow.loadURL("http://localhost:5173/clockapp");
+//   mainWindow.webContents.openDevTools();
+
+  mainWindow.loadURL("http://localhost:5273/clockapp");
 }
 
 app.whenReady().then(createWindow);
