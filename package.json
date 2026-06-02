@@ -9,7 +9,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "build": {
-    "appId": "com.company.clocksystem"
+    "appId": "com.company.clocksystem",
+    "win": {
+      "icon": "icon.ico"
+    }
   },
   "repository": {
     "type": "git",
