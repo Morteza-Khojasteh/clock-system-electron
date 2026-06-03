@@ -1,8 +1,5 @@
-const path = require("path");
+const { CONFIG_FILE } = require("../config/constants");
 const storage = require("../storage/configStore");
-
-const CONFIG_DIR = process.env.ProgramData + "/ClockSystem";
-const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
 
 function getDeviceToken() {
   const config = storage.read(CONFIG_FILE);
@@ -17,8 +14,4 @@ function resetDeviceToken() {
   storage.remove(CONFIG_FILE);
 }
 
-module.exports = {
-  getDeviceToken,
-  saveDeviceToken,
-  resetDeviceToken,
-};
+module.exports = { getDeviceToken, saveDeviceToken, resetDeviceToken };
