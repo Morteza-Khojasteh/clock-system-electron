@@ -8,14 +8,9 @@ const {
 const {
   createSetupWindow,
 } = require("./app/windows/factories/createSetupWindow");
-const {
-  createCloseWindow,
-  reassertCloseWindow,
-} = require("./app/windows/factories/createCloseWindow");
 const { registerDeviceIpc } = require("./app/ipc/deviceIpc");
 
 let mainWindow = null;
-let closeWindow = null;
 let setupWindow = null;
 
 function launchApp() {
@@ -26,20 +21,13 @@ function launchApp() {
     return;
   }
 
-  mainWindow = createMainWindow(token, {
-    onNavigate: () => reassertCloseWindow(closeWindow),
-  });
-  closeWindow = createCloseWindow();
+  mainWindow = createMainWindow(token);
 }
 
 function restartToSetup() {
   if (mainWindow) {
     mainWindow.close();
     mainWindow = null;
-  }
-  if (closeWindow) {
-    closeWindow.close();
-    closeWindow = null;
   }
   setupWindow = createSetupWindow();
 }
@@ -49,10 +37,7 @@ function launchAfterSetup() {
     setupWindow.close();
     setupWindow = null;
   }
-  mainWindow = createMainWindow(getDeviceToken(), {
-    onNavigate: () => reassertCloseWindow(closeWindow),
-  });
-  closeWindow = createCloseWindow();
+  mainWindow = createMainWindow(getDeviceToken());
 }
 
 app.whenReady().then(() => {
