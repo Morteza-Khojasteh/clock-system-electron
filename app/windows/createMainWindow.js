@@ -21,7 +21,7 @@ async function clearAuthStorage(win) {
 
 function createMainWindow(token, { onNavigate } = {}) {
   const win = new BrowserWindow({
-    icon: path.join(__dirname, "../assets/icon.ico"),
+    icon: path.join(__dirname, "../assets/icon.png"),
     width: 1280,
     height: 900,
     kiosk: true,
