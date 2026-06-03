@@ -3,6 +3,9 @@ const path = require("path");
 const { SERVER_URL } = require("../config/constants");
 
 const AUTH_KEYS = ["auth_token", "auth_staff"];
+const RETRY_INTERVAL = 15_000; // ms between reconnection attempts when offline
+const OFFLINE_PAGE = path.join(__dirname, "../ui/offline.html");
+const LOADING_PAGE = path.join(__dirname, "../ui/loading.html");
 
 async function clearAuthStorage(win) {
   if (!win || win.isDestroyed()) return;
@@ -30,6 +33,26 @@ function createMainWindow(token, { onNavigate } = {}) {
     },
   });
 
+  let retryTimer = null;
+  let serverLoaded = false; // true once the server page has loaded at least once
+
+  const serverURL = `${SERVER_URL}/${token}`;
+
+  function loadServer() {
+    win.loadURL(serverURL);
+  }
+
+  function showOffline() {
+    if (retryTimer) clearInterval(retryTimer);
+
+    win.loadFile(OFFLINE_PAGE);
+
+    // Retry on a fixed interval until the server comes back
+    retryTimer = setInterval(() => {
+      if (!win.isDestroyed()) loadServer();
+    }, RETRY_INTERVAL);
+  }
+
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
 
   win.webContents.on("will-navigate", (event, url) => {
@@ -41,19 +64,51 @@ function createMainWindow(token, { onNavigate } = {}) {
   win.webContents.on("did-navigate", () => onNavigate?.());
   win.webContents.on("did-navigate-in-page", () => onNavigate?.());
 
-  // Step 1: load the local loader page
-  win.loadFile(path.join(__dirname, "../ui/loading.html"));
+  // Any network / DNS / connection failure lands here
+  win.webContents.on(
+    "did-fail-load",
+    (event, errorCode, errorDescription, validatedURL) => {
+      // Ignore aborted loads (-3) — these happen when we call loadURL while
+      // a previous load is still in flight (e.g. loader → server transition)
+      if (errorCode === -3) return;
 
-  // Step 2: loader is painted → show window, then load the server URL
+      // Ignore failures on local file:// pages (offline / loading pages themselves)
+      if (validatedURL.startsWith("file://")) return;
+
+      console.error(
+        `[main-window] Load failed (${errorCode}: ${errorDescription}) — showing offline page`,
+      );
+      showOffline();
+    },
+  );
+
+  // When a load succeeds, cancel any pending retry timer
+  win.webContents.on("did-finish-load", () => {
+    const url = win.webContents.getURL();
+
+    // Ignore the local loader and offline pages
+    if (!url.startsWith(SERVER_URL)) return;
+
+    // Server page loaded successfully
+    if (retryTimer) {
+      clearInterval(retryTimer);
+      retryTimer = null;
+    }
+
+    if (!serverLoaded) {
+      serverLoaded = true;
+      clearAuthStorage(win); // startup crash-fallback auth clear
+    }
+  });
+
+  // ── Boot sequence ──────────────────────────────────────────────
+  // Step 1: show the local loader (instant, no network required)
+  win.loadFile(LOADING_PAGE);
+
+  // Step 2: loader painted → reveal window, start loading the server
   win.webContents.once("did-finish-load", () => {
     win.show();
-
-    // Step 3: server page finished → clear stale auth (crash fallback)
-    win.webContents.once("did-finish-load", () => {
-      clearAuthStorage(win);
-    });
-
-    win.loadURL(`${SERVER_URL}/${token}`);
+    loadServer();
   });
 
   return win;
