@@ -4,12 +4,14 @@ const { getDeviceToken } = require("./app/services/deviceService");
 const {
   createMainWindow,
   clearAuthStorage,
-} = require("./app/windows/createMainWindow");
-const { createSetupWindow } = require("./app/windows/createSetupWindow");
+} = require("./app/windows/factories/createMainWindow");
+const {
+  createSetupWindow,
+} = require("./app/windows/factories/createSetupWindow");
 const {
   createCloseWindow,
   reassertCloseWindow,
-} = require("./app/windows/createCloseWindow");
+} = require("./app/windows/factories/createCloseWindow");
 const { registerDeviceIpc } = require("./app/ipc/deviceIpc");
 
 let mainWindow = null;

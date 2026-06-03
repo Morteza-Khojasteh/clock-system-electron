@@ -7,16 +7,16 @@ function createSetupWindow() {
     height: 600,
     resizable: false,
     autoHideMenuBar: true,
-    icon: path.join(__dirname, "../assets/icon.png"),
+    icon: path.join(__dirname, "../../assets/icon.png"),
     webPreferences: {
-      preload: path.join(__dirname, "../preload/setup-preload.js"),
+      preload: path.join(__dirname, "../../preload/setup-preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
     },
   });
 
-  win.loadFile(path.join(__dirname, "../ui/setup.html"));
+  win.loadFile(path.join(__dirname, "../../ui/setup.html"));
 
   return win;
 }

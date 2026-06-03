@@ -1,11 +1,11 @@
 const { BrowserWindow } = require("electron");
 const path = require("path");
-const { SERVER_URL } = require("../config/constants");
+const { SERVER_URL } = require("../../config/constants");
 
 const AUTH_KEYS = ["auth_token", "auth_staff"];
 const RETRY_INTERVAL = 15_000; // ms between reconnection attempts when offline
-const OFFLINE_PAGE = path.join(__dirname, "../ui/offline.html");
-const LOADING_PAGE = path.join(__dirname, "../ui/loading.html");
+const OFFLINE_PAGE = path.join(__dirname, "../../ui/offline.html");
+const LOADING_PAGE = path.join(__dirname, "../../ui/loading.html");
 
 async function clearAuthStorage(win) {
   if (!win || win.isDestroyed()) return;
@@ -22,8 +22,8 @@ async function clearAuthStorage(win) {
 function createMainWindow(token, { onNavigate } = {}) {
   const win = new BrowserWindow({
     icon: path.join(__dirname, "../assets/icon.png"),
-    width: 1280,
-    height: 900,
+    // width: 1280,
+    // height: 900,
     kiosk: true,
     autoHideMenuBar: true,
     show: false,

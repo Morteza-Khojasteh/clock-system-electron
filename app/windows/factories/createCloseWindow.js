@@ -20,14 +20,14 @@ function createCloseWindow() {
     visibleOnAllWorkspaces: true,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "../preload/overlay-preload.js"),
+      preload: path.join(__dirname, "../../preload/overlay-preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
     },
   });
 
-  win.loadFile(path.join(__dirname, "../ui/close.html"));
+  win.loadFile(path.join(__dirname, "../../ui/close.html"));
 
   win.once("ready-to-show", () => {
     // Set the highest z-order level before showing
