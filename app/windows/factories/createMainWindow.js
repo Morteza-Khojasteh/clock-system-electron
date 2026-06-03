@@ -3,7 +3,7 @@ const path = require("path");
 const { SERVER_URL } = require("../../config/constants");
 
 const AUTH_KEYS = ["auth_token", "auth_staff"];
-const RETRY_INTERVAL = 15_000; // ms between reconnection attempts when offline
+const RETRY_INTERVAL = 15_000;
 const OFFLINE_PAGE = path.join(__dirname, "../../ui/offline.html");
 const LOADING_PAGE = path.join(__dirname, "../../ui/loading.html");
 
@@ -19,22 +19,23 @@ async function clearAuthStorage(win) {
   }
 }
 
-function createMainWindow(token, { onNavigate } = {}) {
+function createMainWindow(token) {
   const win = new BrowserWindow({
-    icon: path.join(__dirname, "../assets/icon.png"),
+    icon: path.join(__dirname, "../../assets/icon.png"),
     // width: 1280,
     // height: 900,
-    kiosk: true,
+    fullscreen: true,
     autoHideMenuBar: true,
     show: false,
     webPreferences: {
+      preload: path.join(__dirname, "../../preload/overlay-preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
   let retryTimer = null;
-  let serverLoaded = false; // true once the server page has loaded at least once
+  let serverLoaded = false;
 
   const serverURL = `${SERVER_URL}/${token}`;
 
@@ -61,23 +62,11 @@ function createMainWindow(token, { onNavigate } = {}) {
     }
   });
 
-  win.webContents.on("did-navigate", () => onNavigate?.());
-  win.webContents.on("did-navigate-in-page", () => onNavigate?.());
-
-  // Any network / DNS / connection failure lands here
   win.webContents.on(
     "did-fail-load",
-    (event, errorCode, errorDescription, validatedURL) => {
-      // Ignore aborted loads (-3) — these happen when we call loadURL while
-      // a previous load is still in flight (e.g. loader → server transition)
+    (_event, errorCode, _desc, validatedURL) => {
       if (errorCode === -3) return;
-
-      // Ignore failures on local file:// pages (offline / loading pages themselves)
       if (validatedURL.startsWith("file://")) return;
-
-      console.error(
-        `[main-window] Load failed (${errorCode}: ${errorDescription}) — showing offline page`,
-      );
       showOffline();
     },
   );
@@ -97,7 +86,7 @@ function createMainWindow(token, { onNavigate } = {}) {
 
     if (!serverLoaded) {
       serverLoaded = true;
-      clearAuthStorage(win); // startup crash-fallback auth clear
+      clearAuthStorage(win);
     }
   });
 
@@ -108,6 +97,7 @@ function createMainWindow(token, { onNavigate } = {}) {
   // Step 2: loader painted → reveal window, start loading the server
   win.webContents.once("did-finish-load", () => {
     win.show();
+    win.setKiosk(true);
     loadServer();
   });
 
