@@ -4,7 +4,7 @@ const path = require("path");
 function createSetupWindow() {
   const win = new BrowserWindow({
     width: 700,
-    height: 540,
+    height: 600,
     resizable: false,
     autoHideMenuBar: true,
     icon: path.join(__dirname, "../assets/icon.ico"),
