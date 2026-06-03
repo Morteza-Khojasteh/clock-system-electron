@@ -23,33 +23,52 @@ function createMainWindow(token, { onNavigate } = {}) {
     height: 900,
     kiosk: true,
     autoHideMenuBar: true,
+    // Start hidden — shown once the loader is displayed
+    show: false,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  // Startup fallback: clear stale auth data from a previous crash
-  win.webContents.once("did-finish-load", () => {
-    clearAuthStorage(win);
+  // 1. Show the local loader immediately — zero blank-screen time
+  win.loadFile(path.join(__dirname, "../ui/loading.html"));
+
+  win.once("ready-to-show", () => {
+    win.show();
+
+    // 2. Once the loader is painted, kick off the real server load
+    win.webContents.once("did-finish-load", () => {
+      win.loadURL(`${SERVER_URL}/${token}`);
+    });
   });
 
-  // Re-assert the close button after every navigation (login → dashboard, etc.)
+  // 3. Startup fallback: clear stale auth data from a previous crash
+  //    Fires after the server page finishes loading (the second load)
+  win.webContents.on("did-finish-load", () => {
+    // Only clear after the server URL has loaded, not the loader itself
+    if (win.webContents.getURL().startsWith(SERVER_URL)) {
+      clearAuthStorage(win);
+    }
+  });
+
+  // 4. Re-assert the close button after every navigation (login → dashboard, etc.)
   win.webContents.on("did-navigate", () => {
     onNavigate?.();
   });
 
-  // Also covers in-page (SPA) navigations like hash/history changes
+  // Also covers SPA navigations (hash / history changes)
   win.webContents.on("did-navigate-in-page", () => {
     onNavigate?.();
   });
 
-  win.loadURL(`${SERVER_URL}/${token}`);
-
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
 
   win.webContents.on("will-navigate", (event, url) => {
-    if (!url.startsWith(SERVER_URL)) event.preventDefault();
+    // Allow the initial server load; block anything outside SERVER_URL
+    if (!url.startsWith(SERVER_URL) && !url.startsWith("file://")) {
+      event.preventDefault();
+    }
   });
 
   return win;
