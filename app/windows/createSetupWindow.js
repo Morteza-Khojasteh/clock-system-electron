@@ -7,7 +7,7 @@ function createSetupWindow() {
     height: 600,
     resizable: false,
     autoHideMenuBar: true,
-    icon: path.join(__dirname, "../assets/icon.ico"),
+    icon: path.join(__dirname, "../assets/icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "../preload/setup-preload.js"),
       contextIsolation: true,
