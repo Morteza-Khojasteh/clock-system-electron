@@ -1,6 +1,6 @@
 const path = require("path");
 
-const CONFIG_DIR = path.join(process.env.ProgramData, "ClockSystem");
+const CONFIG_DIR  = path.join(process.env.ProgramData || "C:\\ProgramData", "ClockSystem");
 const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
 
 const SERVER_URL =
@@ -8,8 +8,4 @@ const SERVER_URL =
     ? "http://localhost:5173/clockapp"
     : "http://localhost:5173/clockapp";
 
-module.exports = {
-  CONFIG_DIR,
-  CONFIG_FILE,
-  SERVER_URL,
-};
+module.exports = { CONFIG_DIR, CONFIG_FILE, SERVER_URL };
