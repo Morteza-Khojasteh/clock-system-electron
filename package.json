@@ -1,6 +1,6 @@
 {
   "name": "clock-system-electron",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "Kiosk-mode staff clock system client",
   "main": "main.js",
   "scripts": {
