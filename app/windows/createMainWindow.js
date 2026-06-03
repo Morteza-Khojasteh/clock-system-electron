@@ -4,11 +4,6 @@ const { SERVER_URL } = require("../config/constants");
 
 const AUTH_KEYS = ["auth_token", "auth_staff"];
 
-/**
- * Clears auth localStorage keys in the main window's renderer.
- * Returns a promise that resolves when done (or silently if the
- * window is already destroyed / page not yet loaded).
- */
 async function clearAuthStorage(win) {
   if (!win || win.isDestroyed()) return;
   try {
@@ -21,7 +16,7 @@ async function clearAuthStorage(win) {
   }
 }
 
-function createMainWindow(token) {
+function createMainWindow(token, { onNavigate } = {}) {
   const win = new BrowserWindow({
     icon: path.join(__dirname, "../assets/icon.ico"),
     width: 1280,
@@ -34,9 +29,19 @@ function createMainWindow(token) {
     },
   });
 
-  // Startup fallback: clear any stale auth data left by a previous crash
+  // Startup fallback: clear stale auth data from a previous crash
   win.webContents.once("did-finish-load", () => {
     clearAuthStorage(win);
+  });
+
+  // Re-assert the close button after every navigation (login → dashboard, etc.)
+  win.webContents.on("did-navigate", () => {
+    onNavigate?.();
+  });
+
+  // Also covers in-page (SPA) navigations like hash/history changes
+  win.webContents.on("did-navigate-in-page", () => {
+    onNavigate?.();
   });
 
   win.loadURL(`${SERVER_URL}/${token}`);

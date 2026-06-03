@@ -6,7 +6,10 @@ const {
   clearAuthStorage,
 } = require("./app/windows/createMainWindow");
 const { createSetupWindow } = require("./app/windows/createSetupWindow");
-const { createCloseWindow } = require("./app/windows/createCloseWindow");
+const {
+  createCloseWindow,
+  reassertCloseWindow,
+} = require("./app/windows/createCloseWindow");
 const { registerDeviceIpc } = require("./app/ipc/deviceIpc");
 
 let mainWindow = null;
@@ -21,7 +24,9 @@ function launchApp() {
     return;
   }
 
-  mainWindow = createMainWindow(token);
+  mainWindow = createMainWindow(token, {
+    onNavigate: () => reassertCloseWindow(closeWindow),
+  });
   closeWindow = createCloseWindow();
 }
 
@@ -42,7 +47,9 @@ function launchAfterSetup() {
     setupWindow.close();
     setupWindow = null;
   }
-  mainWindow = createMainWindow(getDeviceToken());
+  mainWindow = createMainWindow(getDeviceToken(), {
+    onNavigate: () => reassertCloseWindow(closeWindow),
+  });
   closeWindow = createCloseWindow();
 }
 
