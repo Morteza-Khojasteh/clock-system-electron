@@ -7,8 +7,8 @@ function createCloseWindow() {
   const win = new BrowserWindow({
     x: width - 80,
     y: 20,
-    width: 60,
-    height: 60,
+    width: 65,
+    height: 65,
     frame: false,
     transparent: true,
     resizable: false,

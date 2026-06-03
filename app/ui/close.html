@@ -17,24 +17,26 @@
 
       html,
       body {
-        width: 60px;
-        height: 60px;
+        width: 65px;
+        height: 65px;
         overflow: hidden;
         background: transparent;
       }
 
       button {
-        width: 60px;
-        height: 60px;
+        width: 65px;
+        height: 65px;
         border: none;
-        border-radius: 20%;
+        border-radius: 30%;
         background: rgba(220, 38, 38, 0.95);
         color: white;
         font-size: 36px;
         line-height: 1;
         cursor: pointer;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-        transition: background 0.2s ease, box-shadow 0.2s ease;
+        /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); */
+        transition:
+          background 0.2s ease,
+          box-shadow 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -43,12 +45,13 @@
 
       button:hover {
         background: rgba(185, 28, 28, 0.98);
-        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+        font-size: 40px;
+        /* box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45); */
       }
 
       button:active {
         background: rgba(153, 27, 27, 1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); */
       }
     </style>
   </head>
