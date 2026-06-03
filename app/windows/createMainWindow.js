@@ -23,7 +23,6 @@ function createMainWindow(token, { onNavigate } = {}) {
     height: 900,
     kiosk: true,
     autoHideMenuBar: true,
-    // Start hidden — shown once the loader is displayed
     show: false,
     webPreferences: {
       contextIsolation: true,
@@ -31,44 +30,30 @@ function createMainWindow(token, { onNavigate } = {}) {
     },
   });
 
-  // 1. Show the local loader immediately — zero blank-screen time
-  win.loadFile(path.join(__dirname, "../ui/loading.html"));
-
-  win.once("ready-to-show", () => {
-    win.show();
-
-    // 2. Once the loader is painted, kick off the real server load
-    win.webContents.once("did-finish-load", () => {
-      win.loadURL(`${SERVER_URL}/${token}`);
-    });
-  });
-
-  // 3. Startup fallback: clear stale auth data from a previous crash
-  //    Fires after the server page finishes loading (the second load)
-  win.webContents.on("did-finish-load", () => {
-    // Only clear after the server URL has loaded, not the loader itself
-    if (win.webContents.getURL().startsWith(SERVER_URL)) {
-      clearAuthStorage(win);
-    }
-  });
-
-  // 4. Re-assert the close button after every navigation (login → dashboard, etc.)
-  win.webContents.on("did-navigate", () => {
-    onNavigate?.();
-  });
-
-  // Also covers SPA navigations (hash / history changes)
-  win.webContents.on("did-navigate-in-page", () => {
-    onNavigate?.();
-  });
-
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
 
   win.webContents.on("will-navigate", (event, url) => {
-    // Allow the initial server load; block anything outside SERVER_URL
     if (!url.startsWith(SERVER_URL) && !url.startsWith("file://")) {
       event.preventDefault();
     }
+  });
+
+  win.webContents.on("did-navigate", () => onNavigate?.());
+  win.webContents.on("did-navigate-in-page", () => onNavigate?.());
+
+  // Step 1: load the local loader page
+  win.loadFile(path.join(__dirname, "../ui/loading.html"));
+
+  // Step 2: loader is painted → show window, then load the server URL
+  win.webContents.once("did-finish-load", () => {
+    win.show();
+
+    // Step 3: server page finished → clear stale auth (crash fallback)
+    win.webContents.once("did-finish-load", () => {
+      clearAuthStorage(win);
+    });
+
+    win.loadURL(`${SERVER_URL}/${token}`);
   });
 
   return win;
