@@ -1,13 +1,10 @@
 const { ipcMain } = require("electron");
-const {
-  saveDeviceToken,
-  resetDeviceToken,
-} = require("../services/deviceService");
+const { saveDeviceToken, resetDeviceToken } = require("../services/deviceService");
 
-function registerDeviceIpc({ onSetupRestart }) {
+function registerDeviceIpc({ onSetupRestart, onSetupComplete }) {
   ipcMain.handle("save-device-token", async (_, token) => {
     saveDeviceToken(token);
-    onSetupRestart?.();
+    onSetupComplete?.();
     return true;
   });
 
