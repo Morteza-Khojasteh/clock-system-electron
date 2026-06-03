@@ -1,7 +1,7 @@
 {
   "name": "clock-system-electron",
   "version": "1.0.0",
-  "description": "",
+  "description": "Kiosk-mode staff clock system client",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -10,15 +10,40 @@
   },
   "build": {
     "appId": "com.company.clocksystem",
+    "productName": "Clock System",
+    "files": [
+      "main.js",
+      "app/**/*",
+      "!app/assets/icon.ico",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "app/assets/icon.ico",
+        "to": "icon.ico"
+      }
+    ],
     "win": {
-      "icon": "icon.ico"
+      "icon": "app/assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "runAfterFinish": true
     }
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Morteza-Khojasteh/clock-system-electron.git"
   },
-  "keywords": [],
+  "keywords": ["electron", "kiosk", "clock", "attendance"],
   "author": "Morteza Khojasteh",
   "license": "ISC",
   "bugs": {
