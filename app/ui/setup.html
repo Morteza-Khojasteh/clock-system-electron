@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'none';"
+    />
+
+    <style>
+      body {
+        font-family: Segoe UI;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f8fafc;
+      }
+
+      .card {
+        width: 500px;
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+      }
+
+      button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        background: #16a34a;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <h2>Clock System Setup</h2>
+
+      <p>Enter the device token assigned to this till.</p>
+
+      <input id="token" placeholder="Device Token" />
+
+      <button id="saveBtn">Save & Launch</button>
+    </div>
+
+    <script>
+      document.getElementById("saveBtn").addEventListener("click", async () => {
+        const token = document.getElementById("token").value.trim();
+
+        if (!token) {
+          alert("Enter a device token");
+          return;
+        }
+
+        await window.setupAPI.saveToken(token);
+      });
+    </script>
+  </body>
+</html>
