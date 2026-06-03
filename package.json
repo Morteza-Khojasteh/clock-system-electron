@@ -14,21 +14,23 @@
     "files": [
       "main.js",
       "app/**/*",
-      "!app/assets/icon.ico",
+      "!app/assets/icon.png",
       "package.json"
     ],
     "extraResources": [
       {
-        "from": "app/assets/icon.ico",
+        "from": "app/assets/icon.png",
         "to": "icon.ico"
       }
     ],
     "win": {
-      "icon": "app/assets/icon.ico",
+      "icon": "app/assets/icon.png",
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -43,17 +45,21 @@
     "type": "git",
     "url": "git+https://github.com/Morteza-Khojasteh/clock-system-electron.git"
   },
-  "keywords": ["electron", "kiosk", "clock", "attendance"],
+  "keywords": [
+    "electron",
+    "kiosk",
+    "clock",
+    "attendance"
+  ],
   "author": "Morteza Khojasteh",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Morteza-Khojasteh/clock-system-electron/issues"
   },
   "homepage": "https://github.com/Morteza-Khojasteh/clock-system-electron#readme",
-  "dependencies": {
-    "electron": "^42.3.1"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "electron": "^42.3.1",
     "electron-builder": "^26.8.1"
   }
 }
