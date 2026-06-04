@@ -23,6 +23,7 @@
         "to": "icon.ico"
       }
     ],
+    "copyright": "Copyright © 2026 Morteza Khojasteh",
     "win": {
       "icon": "app/assets/icon.png",
       "target": [
